@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Note;
 use App\User;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -138,6 +139,84 @@ class NotesTest extends DuskTestCase
                 ->assertSeeIn('.notes', 'No notes yet')
                 ->assertDontSeeIn('.notes', 'You have 1 note')
                 ->assertMissing('.notes ul li:nth-child(2)');
+        });
+    }
+
+    /**
+     * @test A user can open a previous note
+     * 
+     * @return void
+     */
+    public function a_user_can_open_a_previous_note()
+    {
+        $user = factory(User::class)->create();
+
+        $note = factory(Note::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $this->browse(function (Browser $browser) use ($user, $note) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->pause(500)
+                ->clickLink($note->title)
+                ->pause(500)
+                ->assertInputValue('@title', $note->title)
+                ->assertInputValue('@body', $note->body);
+        });
+    }
+
+    /**
+     * @test A user can delete notes
+     * 
+     * @return void
+     */
+    public function a_user_can_delete_notes()
+    {
+        $user = factory(User::class)->create();
+
+        $notes = factory(Note::class, 2)->create([
+            'user_id' => $user->id
+        ]);
+
+        $this->browse(function (Browser $browser) use ($user, $notes) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->pause(500);
+            
+            foreach ($notes as $note) {
+                $browser->click('.notes .list-group-item:nth-child(2) a:nth-child(2)')
+                    ->pause(500)
+                    ->assertSeeIn('.alert', 'Your note has been deleted.')
+                    ->assertDontSeeIn('.notes', $note->title);
+            }
+
+            $browser->pause(500)
+                ->assertSeeIn('.notes', 'No notes yet');
+        });
+    }
+
+    /**
+     * @test A user's note is cleared when deleted if currently being viewed
+     */
+    public function a_users_note_is_cleared_when_deleted_if_currently_being_viewed()
+    {
+        $user = factory(User::class)->create();
+
+        $note = factory(Note::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $this->browse(function (Browser $browser) use ($user, $note) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->pause(500)
+                ->clickLink($note->title)
+                ->pause(500)
+                ->click('.notes .list-group-item:nth-child(2) a:nth-child(2)')
+                ->pause(500)
+                ->assertInputValue('@title', '')
+                ->assertInputValue('@body', '');
         });
     }
 }
