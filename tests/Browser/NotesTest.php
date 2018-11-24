@@ -28,4 +28,40 @@ class NotesTest extends DuskTestCase
             ->assertValue('#body', '');
         });
     }
+
+    /**
+     * @test A user can save a new note
+     * 
+     * @return void
+     */
+    // public function a_user_can_save_a_new_note()
+    // {
+    //     $this->browse(function (Browser $browsser) {
+    //         //
+    //     });
+    // }
+
+    /**
+     * @test A user can see the word count of their note
+     * 
+     * @return void
+     */
+    // public function a_user_can_see_the_word_count_of_their_note()
+    // {
+    //     $this->browse(function (Browser $browsser) {
+    //         //
+    //     });
+    // }
+
+    /** 
+     * @test A user can start a fresh note
+     * 
+     * @return void
+     */
+    // public function a_user_can_start_a_fresh_note()
+    // {
+    //     $this->browse(function (Browser $browsser) {
+    //         //
+    //     });
+    // }
 }
