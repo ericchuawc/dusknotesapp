@@ -10,6 +10,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class SignInTest extends DuskTestCase
 {
+    use DatabaseMigrations;
+    
     /**
      * @test A user can sign in
      *
@@ -25,9 +27,7 @@ class SignInTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->visit(new SignInPage)
-                ->type('#email', $user->email)
-                ->type('#password', 'password')
-                ->press('Login')
+                ->signIn($user->email, 'password')
                 ->assertPathIs('/home')
                 ->assertSeeIn('.navbar', $user->name);
         });
