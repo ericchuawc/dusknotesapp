@@ -14,7 +14,8 @@ abstract class Page extends BasePage
     public static function siteElements()
     {
         return [
-            '@element' => '#selector',
+            '@title' => 'input[id="title"]',
+            '@body' => 'textarea[id="body"]'
         ];
     }
 }
