@@ -92,4 +92,52 @@ class NotesTest extends DuskTestCase
                 ->assertInputValue('@body', '');
         });
     }
+
+    /**
+     * @test A user's current note is saved when starting a new note
+     * 
+     * @return void
+     */
+    public function a_users_current_note_is_saved_when_starting_a_new_note()
+    {
+        $user = factory(User::class)->create();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->typeNote('One', 'First note')
+                ->saveNote()
+                ->pause(500)
+                ->type('@title', 'One updated')
+                ->type('@body', 'First note updated')
+                ->clickLink('Create new note')
+                ->pause(500)
+                ->assertSeeIn('.notes', 'One updated')
+                ->clickLink('One updated')
+                ->pause(500)
+                ->assertInputValue('@title', 'One updated')
+                ->assertInputValue('@body', 'First note updated');
+        });
+    }
+
+    /**
+     * @test A user can't save a note when no title
+     * 
+     * @return void
+     */
+    public function a_user_cant_save_note_with_no_title()
+    {
+        $user = factory(User::class)->create();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->saveNote()
+                ->pause(500)
+                ->assertMissing('.alert')
+                ->assertSeeIn('.notes', 'No notes yet')
+                ->assertDontSeeIn('.notes', 'You have 1 note')
+                ->assertMissing('.notes ul li:nth-child(2)');
+        });
+    }
 }
