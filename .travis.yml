@@ -27,7 +27,7 @@ install:
 
 before_script:
   - google-chrome-stable --headless --disable-gpu --window-size=1024,768 --remote-debugging-port=9222 http://localhost &
-  - php artisan serve &
+  # - php artisan serve &
 
 script:
   - php artisan dusk
