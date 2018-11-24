@@ -219,4 +219,32 @@ class NotesTest extends DuskTestCase
                 ->assertInputValue('@body', '');
         });
     }
+
+    /**
+     * @test A user's notes are ordered by last updated in descending order
+     */
+    public function a_users_notes_are_ordered_by_last_updated_in_descending_order()
+    {
+        $user = factory(User::class)->create();
+
+        $notes = factory(Note::class, 3)->create([
+            'user_id' => $user->id,
+            'updated_at' => \Carbon\Carbon::now()->subDays(2),
+        ]);
+
+        $this->browse(function (Browser $browser) use ($user, $notes) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->pause(500);
+
+            foreach ($notes as $note) {
+                $browser->clickLink($note->title)
+                    ->pause(500)
+                    ->typeNote($newTitle = $note->title . ' updated', 'Woo')
+                    ->saveNote()
+                    ->pause(500)
+                    ->assertSeeIn('.notes .list-group-item:nth-child(2)', $newTitle);
+            }
+        });
+    }
 }
