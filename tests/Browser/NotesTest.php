@@ -235,7 +235,8 @@ class NotesTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($user, $notes) {
             $browser->loginAs($user)
                 ->visit(new NotesPage)
-                ->pause(500);
+                ->pause(500)
+                ->screenshot('before_sorting');
 
             foreach ($notes as $note) {
                 $browser->clickLink($note->title)
@@ -245,6 +246,8 @@ class NotesTest extends DuskTestCase
                     ->pause(500)
                     ->assertSeeIn('.notes .list-group-item:nth-child(2)', $newTitle);
             }
+
+            $browser->screenshot('order_sorting');
         });
     }
 }
