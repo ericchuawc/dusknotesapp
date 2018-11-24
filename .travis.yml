@@ -9,6 +9,9 @@ addons:
   chrome: stable
 
 install:
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then 
+      sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
+    fi
   - touch database/testing_browser.sqlite
   - cp .env.testing .env
   - travis_retry composer install --no-interaction --prefer-dist --no-suggest
@@ -27,7 +30,7 @@ install:
 
 before_script:
   - google-chrome-stable --headless --disable-gpu --window-size=1024,768 --remote-debugging-port=9222 http://localhost &
-  # - php artisan serve &
+  - php artisan serve &
 
 script:
   - php artisan dusk
