@@ -13,7 +13,7 @@ install:
       sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
     fi
   - touch database/testing_browser.sqlite
-  - cp .env.testing .env
+  - cp .env.travis .env
   - travis_retry composer install --no-interaction --prefer-dist --no-suggest
   - travis_retry npm install
   # - cd ~/
